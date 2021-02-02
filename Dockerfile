@@ -12,4 +12,4 @@ WORKDIR /app
 
 COPY --from=builder /go/src/app/velasquinho-ubots .
 
-CMD ["velasquinho-ubots"]
+CMD ["./velasquinho-ubots"]
