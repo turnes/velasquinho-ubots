@@ -1,0 +1,16 @@
+name: Lint the code
+
+on:
+  pull_request:
+    branches:
+      - master
+      - development
+
+jobs:
+  lint:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: golangci/golangci-lint-action@master
+      with:
+        version: v1.29

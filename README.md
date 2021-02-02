@@ -2,7 +2,7 @@
 
 
 
-## Setting the project
+## Setting Golang project
 
 ```
 git clone https://github.com/turnes/velasquinho-ubots.git
