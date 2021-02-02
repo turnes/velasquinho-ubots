@@ -10,5 +10,5 @@ FROM scratch
 
 WORKDIR /app
 COPY --from=builder /go/src/app/velasquinho-ubots .
-EXPOSE 8010
+EXPOSE 5000
 CMD ["./velasquinho-ubots"]
