@@ -27,6 +27,9 @@ func (c *Clients) FetchClients() error {
 	}
 
 	req, err := http.NewRequest(http.MethodGet, c.URL, nil)
+	if handleError(err) {
+		return err
+	}
 
 	res, err := apiClient.Do(req)
 	if handleError(err) {

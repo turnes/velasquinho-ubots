@@ -37,6 +37,9 @@ func (o *Orders) FetchOrders() error {
 	}
 
 	req, err := http.NewRequest(http.MethodGet, o.URL, nil)
+	if handleError(err) {
+		return err
+	}
 
 	res, err := apiClient.Do(req)
 	if handleError(err) {

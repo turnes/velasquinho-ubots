@@ -15,10 +15,6 @@ type App struct {
 	VelasquinhoData *data.VelasquinhoData
 }
 
-type Message struct {
-	Message string
-}
-
 func (a *App) Initialize() {
 	OrdersURL := "http://www.mocky.io/v2/598b16861100004905515ec7"
 	ClientUrl := "http://www.mocky.io/v2/598b16291100004705515ec5"
