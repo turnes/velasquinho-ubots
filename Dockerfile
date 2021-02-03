@@ -4,7 +4,7 @@ WORKDIR /go/src/app
 COPY . .
 
 RUN go get -d -v ./...
-RUN CGO_ENABLED=0 go build  -v ./...
+RUN CGO_ENABLED=0 go build  -v .
 
 FROM scratch
 
