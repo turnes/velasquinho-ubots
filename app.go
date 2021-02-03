@@ -26,7 +26,10 @@ func (a *App) Initialize() {
 }
 
 func (a *App) Run(addr string) {
-	log.Fatalln(http.ListenAndServe(addr, a.Router))
+	err := http.ListenAndServe(addr, a.Router)
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 
@@ -47,7 +50,10 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	log.Fatalln(w.Write(response))
+	_, err := w.Write(response)
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func (a *App) getSpendingByClient(w http.ResponseWriter, r *http.Request) {
