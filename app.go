@@ -61,7 +61,11 @@ func (a *App) getSpendingByYear(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Invalid year")
 		return
 	}
-	payload := report.ByYear(a.VelasquinhoData.Clients, a.VelasquinhoData.Orders, vars["year"])
+	payload, err := report.ByYear(a.VelasquinhoData.Clients, a.VelasquinhoData.Orders, vars["year"])
+	if err != nil {
+		respondWithError(w, http.StatusNoContent, "")
+		return
+	}
 	respondWithJSON(w, http.StatusOK, payload)
 }
 

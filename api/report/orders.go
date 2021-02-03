@@ -1,6 +1,7 @@
 package report
 
 import (
+	"errors"
 	"github.com/turnes/velasquinho-ubots/util"
 	"log"
 	"sort"
@@ -55,7 +56,7 @@ func AllTime(clients util.Clients, orders util.Orders) []OrderReportAlltime {
 	return ReportAllTime
 }
 
-func ByYear(clients util.Clients, orders util.Orders, year string) OrderReportByYear {
+func ByYear(clients util.Clients, orders util.Orders, year string) (OrderReportByYear, error) {
 	var ordersYear []util.Order
 	for _, c := range orders.Orders {
 		y := strings.Split(c.Date, "-")
@@ -63,6 +64,11 @@ func ByYear(clients util.Clients, orders util.Orders, year string) OrderReportBy
 			ordersYear = append(ordersYear, c)
 		}
 	}
+
+	if ordersYear == nil {
+		return OrderReportByYear{}, errors.New("not found: No order in this year")
+	}
+
 	sort.Slice(ordersYear, func(i, j int) bool {
 		return ordersYear[i].SubTotal > ordersYear[j].SubTotal
 	})
@@ -73,7 +79,7 @@ func ByYear(clients util.Clients, orders util.Orders, year string) OrderReportBy
 		Nome:     getName(clients, clientOrder.Client),
 		Code:     clientOrder.Code,
 		SubTotal: ordersYear[0].SubTotal,
-	}
+	}, nil
 
 }
 
