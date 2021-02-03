@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -25,13 +26,15 @@ func (a *App) Initialize() {
 }
 
 func (a *App) Run(addr string) {
-	http.ListenAndServe(addr, a.Router)
+	log.Fatalln(http.ListenAndServe(addr, a.Router))
 }
 
 
 func (a *App) InitializeRoutes(){
-	a.Router.HandleFunc("/client/", a.getSpendingByClient ).Methods("GET")
-	a.Router.HandleFunc("/client/year/{year:[0-9]{4}}", a.getSpendingByYear ).Methods("GET")
+	a.Router.HandleFunc("/health", a.health ).Methods("GET")
+	a.Router.HandleFunc("/api/v1/orders/report/all", a.getSpendingByClient ).Methods("GET")
+	a.Router.HandleFunc("/api/v1/orders/report/year/{year:[0-9]{4}}", a.getSpendingByYear ).Methods("GET")
+
 
 }
 
@@ -44,7 +47,7 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	w.Write(response)
+	log.Fatalln(w.Write(response))
 }
 
 func (a *App) getSpendingByClient(w http.ResponseWriter, r *http.Request) {
@@ -66,6 +69,10 @@ func (a *App) getSpendingByYear(w http.ResponseWriter, r *http.Request) {
 		strconv.Itoa(year),
 	}
 	respondWithJSON(w, http.StatusOK, m)
+}
+
+func (a *App) health(w http.ResponseWriter, r *http.Request) {
+	respondWithJSON(w,http.StatusOK, nil)
 }
 
 

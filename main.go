@@ -52,7 +52,7 @@ func main() {
 		for _, i := range o.Items {
 			fmt.Printf("Produto: %s, Pais: %s, Preco: %.2f \n", i.Product, i.Country, i.Price)
 		}
-		fmt.Println("\n")
+		fmt.Println("")
 	}
 
 	a := App{}
