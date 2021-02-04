@@ -34,5 +34,10 @@ git clone git clone https://github.com/turnes/velasquinho-ubots.git
 docker build -t velasquinho-ubots . && docker run -it --rm  -p 8080:5000 --name velasquinho-ubots-api velasquinho-ubots
 ```
 
+# AWS Infrastructure
+
+- ALB Elastic Load Balancer
+- Beanstalk (EC2, CloudWatch, CloudFormation, AutoScaling Group)
+
 
 
