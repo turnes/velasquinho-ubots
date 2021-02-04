@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - development
+  push:
 jobs:
   lint:
     runs-on: ubuntu-20.04

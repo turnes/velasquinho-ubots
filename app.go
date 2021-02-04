@@ -3,36 +3,33 @@ package main
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"github.com/turnes/velasquinho-ubots/api/report"
+	"github.com/turnes/velasquinho-ubots/data"
+	"log"
 	"net/http"
 	"strconv"
 )
 
-
 type App struct {
-	Router *mux.Router
-}
-
-type Message struct {
-	Message string
+	Router          *mux.Router
+	VelasquinhoData *data.VelasquinhoData
 }
 
 func (a *App) Initialize() {
+	OrdersURL := "http://www.mocky.io/v2/598b16861100004905515ec7"
+	ClientUrl := "http://www.mocky.io/v2/598b16291100004705515ec5"
+	a.VelasquinhoData = &data.VelasquinhoData{}
+	a.VelasquinhoData.Initialize(ClientUrl, OrdersURL)
 	a.Router = mux.NewRouter()
-
-
-
 	a.InitializeRoutes()
 }
 
 func (a *App) Run(addr string) {
-	http.ListenAndServe(addr, a.Router)
-}
-
-
-func (a *App) InitializeRoutes(){
-	a.Router.HandleFunc("/client/", a.getSpendingByClient ).Methods("GET")
-	a.Router.HandleFunc("/client/year/{year:[0-9]{4}}", a.getSpendingByYear ).Methods("GET")
-
+	a.VelasquinhoData.Run()
+	err := http.ListenAndServe(addr, a.Router)
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
@@ -44,31 +41,40 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	w.Write(response)
+	_, err := w.Write(response)
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func (a *App) getSpendingByClient(w http.ResponseWriter, r *http.Request) {
-	m := Message{
-		"Hello World",
-	}
-	respondWithJSON(w, http.StatusOK, m)
+
+	payload := report.AllTime(a.VelasquinhoData.Clients, a.VelasquinhoData.Orders)
+	respondWithJSON(w, http.StatusOK, payload)
 
 }
 
 func (a *App) getSpendingByYear(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	year, err := strconv.Atoi(vars["year"])
+	_, err := strconv.Atoi(vars["year"])
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid year")
 		return
 	}
-	m := Message{
-		strconv.Itoa(year),
+	payload, err := report.ByYear(a.VelasquinhoData.Clients, a.VelasquinhoData.Orders, vars["year"])
+	if err != nil {
+		respondWithError(w, http.StatusNoContent, "")
+		return
 	}
-	respondWithJSON(w, http.StatusOK, m)
+	respondWithJSON(w, http.StatusOK, payload)
 }
 
+func (a *App) health(w http.ResponseWriter, r *http.Request) {
+	respondWithJSON(w, http.StatusOK, nil)
+}
 
-
-
-
+func (a *App) InitializeRoutes() {
+	a.Router.HandleFunc("/health", a.health).Methods("GET")
+	a.Router.HandleFunc("/api/v1/report/orders", a.getSpendingByClient).Methods("GET")
+	a.Router.HandleFunc("/api/v1/report/orders/year/{year:[0-9]{4}}", a.getSpendingByYear).Methods("GET")
+}
